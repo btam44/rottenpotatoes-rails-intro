@@ -11,13 +11,11 @@ class MoviesController < ApplicationController
   end
 
   def index
-    need_redirect = false
     if params[:sort]
       session[:sort] = params[:sort]
       @movies = Movie.all.order(session[:sort])
     elsif session[:sort]
       @movies = Movie.all.order(session[:sort])
-      need_redirect = true
     else
       @movies = Movie.all
     end
@@ -29,14 +27,10 @@ class MoviesController < ApplicationController
       @selected_retings = session[:ratings].keys
     elsif session[:ratings]
       @selected_retings = session[:ratings].keys
-      need_redirect = true
     else
       @selected_retings = @all_ratings
     end
     
-    if need_redirect
-      redirect_to :sort_by => sort_by, :ratings => @ratings
-    end
     
     @movies =  @movies.where(:rating => @selected_retings)
     

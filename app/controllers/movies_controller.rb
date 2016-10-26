@@ -11,7 +11,13 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params[:sort]
+    if(!params.has_key?(:sort) && !params.has_key?(:ratings))
+      if(session.has_key?(:sort) || session.has_key?(:ratings))
+        redirect_to movies_path(:sort=>session[:sort], :ratings=>session[:ratings])
+      end
+    end
+   
+   if params[:sort]
       session[:sort] = params[:sort]
       @movies = Movie.all.order(session[:sort])
     elsif session[:sort]

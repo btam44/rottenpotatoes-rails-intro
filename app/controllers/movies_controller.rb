@@ -1,13 +1,39 @@
 class MoviesController < ApplicationController
 
-
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
 
+  def show
+    id = params[:id] # retrieve movie ID from URI route
+    @movie = Movie.find(id) # look up movie by unique ID
+    # will render app/views/movies/show.<extension> by default
+  end
+
   def index
-    @movies = Movie.order(params[:sort])
-    @sort = params[:sort]
+    
+    if params[:sort]
+      session[:sort] = params[:sort]
+      @movies = Movie.all.order(session[:sort])
+    elsif session[:sort]
+      @movies = Movie.all.order(session[:sort])
+    else
+      @movies = Movie.all
+    end
+    
+    @all_ratings = Movie.ratings
+    
+    if params[:ratings]
+      session[:ratings] = params[:ratings]
+      @selected_retings = session[:ratings].keys
+    elsif session[:ratings]
+      @selected_retings = session[:ratings].keys
+    else
+      @selected_retings = @all_ratings
+    end
+    
+    @movies =  @movies.where(:rating => @selected_retings)
+    
   end
 
   def new
@@ -37,8 +63,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-  
-
-
 
 end

@@ -17,6 +17,7 @@ class MoviesController < ApplicationController
       @movies = Movie.all.order(session[:sort])
     elsif session[:sort]
       @movies = Movie.all.order(session[:sort])
+      need_redirect = true
     else
       @movies = Movie.all
     end
